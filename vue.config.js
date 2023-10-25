@@ -1,4 +1,3 @@
 module.exports = {
-    publicPath: "summary-boxes",
-    transpileDependencies: true
-  };
+  publicPath: '/summary-boxes/'
+}

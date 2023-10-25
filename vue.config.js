@@ -1,4 +1,4 @@
 module.exports = {
-    publicPath: "/ov-analytical-blocks/",
+    publicPath: "summary-boxes",
     transpileDependencies: true
   };

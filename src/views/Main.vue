@@ -56,7 +56,7 @@
     <div id="main-2" class="w-full h-full grid gap-3">
       <div v-for="(value, key) in data" :key="key" class="cell bg-[#ECEFF1] border border-[#CFD8DC] col-span-1 row-span-1">
         <HeaderBlock :height="'h-10'" :title="String(value).replace(delimiter, hash).split(hash)[0]" :side="'left'" :size="'text-[16px]'"/>
-        <DataBlock :height="'h-10'" :data="String(value).replace(delimiter, hash).split(hash)[1]" :side="'right'" :size="'text-[18px]'"/>
+        <DataBlock :height="'h-10'" :data="String(value).replace(delimiter, hash).split(hash)[1]" :commas="true" :side="'right'" :size="'text-[18px]'"/>
       </div>
     </div>
   </div>

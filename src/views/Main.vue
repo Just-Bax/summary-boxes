@@ -12,6 +12,16 @@
     return data;
   };
 
+  function hashing(length: number) {
+    const symbols = "!@#$%^&*()_+-=[]{}|;:',.<>?"; let result = '';
+    const symbols_length = symbols.length;
+    for (let i = 0; i < length; i++) {
+      const random_index = Math.floor(Math.random() * symbols_length);
+      result += symbols.charAt(random_index);
+    }
+    return result;
+  }
+
   const calculate_cols = () => {
     const window_width = window.innerWidth; let col_num = 1;
     if (window_width >= 1436) { col_num = 10; } 
@@ -37,6 +47,7 @@
   const route = useRoute();
   const commands = ['delimiter'];
   const data = ref<Object>(get_data(route.query, commands));
+  const hash = ref(hashing(5));
   const delimiter = String(route.query.delimiter);
 </script>
 
@@ -44,11 +55,13 @@
   <div id="main-1" class="bg-white p-3" :style="`height:${rows*120}px;`"> 
     <div id="main-2" class="w-full h-full grid gap-3">
       <div v-for="(value, key) in data" :key="key" class="cell bg-[#ECEFF1] border border-[#CFD8DC] col-span-1 row-span-1">
-        <HeaderBlock :height="'h-10'" :title="String(value).split(delimiter)[0]" :side="'left'" :size="'text-[16px]'"/>
-        <DataBlock :height="'h-10'" :data="String(value).split(delimiter)[1]" :side="'right'" :size="'text-[18px]'"/>
+        <HeaderBlock :height="'h-10'" :title="String(value).replace(delimiter, hash).split(hash)[0]" :side="'left'" :size="'text-[16px]'"/>
+        <DataBlock :height="'h-10'" :data="String(value).replace(delimiter, hash).split(hash)[1]" :side="'right'" :size="'text-[18px]'"/>
       </div>
     </div>
   </div>
 </template>
 
-<!-- http://localhost:5173/?delimiter=-&a=Test-40&b=Test-9&c=Test-12&d=Test-12&e=Test-40&f=Test-90&g=Test-9&h=Test-12&i=Test-12&j=Test-40&k=Test-9 -->
+<!-- http://localhost:5173/?delimiter=-&a=Test-40&b=Test-9&c=Test--12&d=Test-12&e=Test-40&f=Test-90&g=Test-9&h=Test-12&i=Test-12&j=Test-40&k=Test-9 -->
+
+<!-- https://just-bax.github.io/summary-boxes/?a=Mthly%20Recurring%20Revenue-25351315.88&b=Mthly%20Reimbursements-4743025.66&c=Mthly%20Ground%20Rent--1210810.53&d=Mthly%20Revenue%20Share--5944696.69&delimiter=-&e=Mthly%20Utilities%20Expense--1512184.88 -->

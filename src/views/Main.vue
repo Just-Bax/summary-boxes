@@ -12,7 +12,7 @@
     return data;
   };
 
-  function hashing(length: number) {
+  function get_hash(length: number) {
     const symbols = "!@#$%^&*()_+-=[]{}|;:',.<>?"; let result = '';
     const symbols_length = symbols.length;
     for (let i = 0; i < length; i++) {
@@ -22,38 +22,52 @@
     return result;
   }
 
-  const calculate_cols = () => {
-    const window_width = window.innerWidth; let col_num = 1;
-    if (window_width >= 1436) { col_num = 10; } 
-    else if (window_width >= 1320) { col_num = 9; } 
-    else if (window_width >= 1024) { col_num = 7; } 
-    else if (window_width >= 868) { col_num = 6; } 
-    else if (window_width >= 768) { col_num = 5; } 
-    else if (window_width >= 640) { col_num = 4; } 
-    else if (window_width >= 540) { col_num = 3; } 
-    else if (window_width >= 440) { col_num = 2; } 
-    cols.value = col_num; rows.value = Math.ceil(Object.keys(data.value).length / col_num);
-    const main_1 = document.getElementById("main-1");
-    main_1!.style.height = `${rows.value*120}px`;
-    const main_2 = document.getElementById("main-2");
-    main_2!.style.gridTemplateColumns = `repeat(${cols.value}, minmax(0, 1fr))`; 
-    main_2!.style.gridTemplateRows = `repeat(${rows.value}, minmax(0, 1fr))`; 
-  }
-  
-  onMounted(() => { calculate_cols(); window.addEventListener('resize', calculate_cols); });
-  onBeforeUnmount(() => { window.removeEventListener('resize', calculate_cols); });
+  const responsive = () => {
+    const breakpoints = [
+      { width: 1436, cols: 10 },
+      { width: 1320, cols: 9 },
+      { width: 1024, cols: 7 },
+      { width: 868, cols: 6 },
+      { width: 768, cols: 5 },
+      { width: 640, cols: 4 },
+      { width: 540, cols: 3 },
+      { width: 440, cols: 2 },
+    ];
 
-  const cols = ref(1); const rows = ref(1);
+    const window_width = window.innerWidth; var cols_number = 1
+    for (const breakpoint of breakpoints) {
+      if (window_width >= breakpoint.width) {
+        cols_number = breakpoint.cols; break;
+      }
+    }
+
+    const data_length = Object.keys(data.value).length;
+    cols.value = cols_number;
+    rows.value = Math.ceil(data_length / cols.value);
+    height.value = rows.value*120;
+
+    const window_1 = document.getElementById("window-1");
+    window_1!.style.height = `${height.value}px`;
+
+    const window_2 = document.getElementById("window-2");
+    window_2!.style.gridTemplateColumns = `repeat(${cols.value}, minmax(0, 1fr)`;
+    window_2!.style.gridTemplateRows = `repeat(${rows.value}, minmax(0, 1fr)`;
+  };
+  
+  onMounted(() => { responsive(); window.addEventListener('resize', responsive); });
+  onBeforeUnmount(() => { window.removeEventListener('resize', responsive); });
+
+  const cols = ref(1); const rows = ref(1); const height = ref(1);
   const route = useRoute();
   const commands = ['delimiter'];
   const data = ref<Object>(get_data(route.query, commands));
-  const hash = ref(hashing(5));
+  const hash = ref(get_hash(5));
   const delimiter = String(route.query.delimiter);
 </script>
 
 <template>
-  <div id="main-1" class="bg-white p-3" :style="`height:${rows*120}px;`"> 
-    <div id="main-2" class="w-full h-full grid gap-3">
+  <div id="window-1" class="bg-white p-3" :style="`height:${height}px;`"> 
+    <div id="window-2" class="w-full h-full grid gap-3">
       <div v-for="(value, key) in data" :key="key" class="cell bg-[#ECEFF1] border border-[#CFD8DC] col-span-1 row-span-1">
         <HeaderBlock :height="'h-10'" :title="String(value).replace(delimiter, hash).split(hash)[0]" :side="'left'" :size="'text-[16px]'"/>
         <DataBlock :height="'h-10'" :data="String(value).replace(delimiter, hash).split(hash)[1]" :commas="true" :side="'right'" :size="'text-[18px]'"/>
@@ -61,7 +75,3 @@
     </div>
   </div>
 </template>
-
-<!-- http://localhost:5173/?delimiter=-&a=Test-40&b=Test-9&c=Test--12&d=Test-12&e=Test-40&f=Test-90&g=Test-9&h=Test-12&i=Test-12&j=Test-40&k=Test-9 -->
-
-<!-- https://just-bax.github.io/summary-boxes/?a=Mthly%20Recurring%20Revenue-25351315.88&b=Mthly%20Reimbursements-4743025.66&c=Mthly%20Ground%20Rent--1210810.53&d=Mthly%20Revenue%20Share--5944696.69&delimiter=-&e=Mthly%20Utilities%20Expense--1512184.88 -->
